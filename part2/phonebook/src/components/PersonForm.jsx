@@ -16,7 +16,6 @@ const PersonForm = ({ people, setPeople, setNotification }) => {
     const person = {
       name,
       number,
-      id: String(people.length + 1),
     };
 
     const foundPerson = checkIsNameExists(people, name);
@@ -38,8 +37,8 @@ const PersonForm = ({ people, setPeople, setNotification }) => {
           }
         });
     } else {
-      addPerson(person).then(() => {
-        setPeople((list) => [...list, person]);
+      addPerson(person).then((newPerson) => {
+        setPeople((list) => [...list, newPerson]);
         setNotification({ content: `Added ${person.name}`, type: "" });
       });
     }
