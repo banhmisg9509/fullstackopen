@@ -29,7 +29,7 @@ let persons = [
 ];
 
 app.use(express.json());
-app.use(express.static("dist"));
+app.use(express.static("public"));
 
 app.use(
   morgan(function (tokens, req, res) {
