@@ -12,7 +12,7 @@ const addPerson = async (person) => {
 
 const deletePerson = async (person) => {
   if (confirm(`Delete ${person.name} ?`)) {
-    return axios.delete(`${URL}/${person.id}`);
+    return axios.delete(`${URL}/${person._id}`);
   }
 };
 
@@ -22,7 +22,7 @@ const updatePerson = async (person) => {
       `${person.name} is already added to phonebook, replace the old number with a new one?`
     )
   ) {
-    return axios.put(`${URL}/${person.id}`, person);
+    return axios.put(`${URL}/${person._id}`, person);
   }
 };
 

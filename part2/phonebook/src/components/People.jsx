@@ -9,7 +9,7 @@ const filterPeople = (people, name) => {
 const People = ({ people, setPeople, filterValue }) => {
   const handleRemovePerson = (person) => {
     deletePerson(person).then(() => {
-      setPeople((list) => list.filter((p) => p.id !== person.id));
+      setPeople((list) => list.filter((p) => p._id !== person._id));
     });
   };
 

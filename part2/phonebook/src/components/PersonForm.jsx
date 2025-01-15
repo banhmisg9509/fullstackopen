@@ -10,6 +10,11 @@ const PersonForm = ({ people, setPeople, setNotification }) => {
   const [name, setName] = useState("");
   const [number, setNumber] = useState("");
 
+  const resetValues = () => {
+    setName("");
+    setNumber("");
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -21,12 +26,13 @@ const PersonForm = ({ people, setPeople, setNotification }) => {
     const foundPerson = checkIsNameExists(people, name);
 
     if (foundPerson) {
-      person.id = foundPerson.id;
+      person._id = foundPerson._id;
       updatePerson(person)
         .then(() => {
           setPeople((list) =>
-            list.map((p) => (p.id === person.id ? person : p))
+            list.map((p) => (p._id === person._id ? person : p))
           );
+          resetValues();
         })
         .catch((e) => {
           if (e.status === 404) {
@@ -35,16 +41,30 @@ const PersonForm = ({ people, setPeople, setNotification }) => {
               type: "error",
             });
           }
+
+          if (e.status === 400) {
+            setNotification({
+              content: e.response.data.error,
+              type: "error",
+            });
+          }
         });
     } else {
-      addPerson(person).then((newPerson) => {
-        setPeople((list) => [...list, newPerson]);
-        setNotification({ content: `Added ${person.name}`, type: "" });
-      });
+      addPerson(person)
+        .then((newPerson) => {
+          setPeople((list) => [...list, newPerson]);
+          setNotification({ content: `Added ${person.name}`, type: "" });
+          resetValues();
+        })
+        .catch((e) => {
+          if (e.status === 400) {
+            setNotification({
+              content: e.response.data.error,
+              type: "error",
+            });
+          }
+        });
     }
-
-    setName("");
-    setNumber("");
   };
 
   return (
