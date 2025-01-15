@@ -1,32 +1,21 @@
-import express from "express";
-import morgan from "morgan";
 import cors from "cors";
+import express, { ErrorRequestHandler } from "express";
+import morgan from "morgan";
+import connectDB from "../db/mongo";
+import {
+  countTotalPhonebook,
+  createPhoneBook,
+  deletePhonebookById,
+  findPhonebookById,
+  findPhonebookByName,
+  getAllPhonebooks,
+  updatePhonebook,
+} from "../db/phonebook";
 
 const port = process.env.PORT || 3001;
 const app = express();
 
-let persons = [
-  {
-    id: "1",
-    name: "Arto Hellas",
-    number: "040-123456",
-  },
-  {
-    id: "2",
-    name: "Ada Lovelace",
-    number: "39-44-5323523",
-  },
-  {
-    id: "3",
-    name: "Dan Abramov",
-    number: "12-43-234345",
-  },
-  {
-    id: "4",
-    name: "Mary Poppendieck",
-    number: "39-23-6423122",
-  },
-];
+connectDB();
 
 app.use(express.json());
 app.use(express.static("public"));
@@ -48,69 +37,102 @@ app.use(
 
 app.use(cors());
 
-app.get("/api/persons", (request, response) => {
-  response.status(200).json(persons).end();
+app.get("/api/persons", async (request, response) => {
+  const phonebooks = await getAllPhonebooks();
+  response.status(200).json(phonebooks).end();
 });
 
-app.get("/api/persons/:id", (request, response) => {
-  const { id } = request.params;
+app.get("/api/persons/:id", async (request, response, next) => {
+  try {
+    const { id } = request.params;
+    const foundPhonebook = await findPhonebookById(id);
 
-  const foundPerson = persons.find((p) => p.id === id);
+    if (!foundPhonebook) {
+      response
+        .status(404)
+        .json({ message: "Not founded person with id: " + id })
+        .end();
+      return;
+    }
 
-  if (!foundPerson) {
-    response
-      .status(404)
-      .json({ message: "Not founded person with id: " + id })
-      .end();
+    response.status(200).json(foundPhonebook).end();
+  } catch (error) {
+    next(error);
   }
-
-  response.status(200).json(foundPerson).end();
 });
 
-app.post("/api/persons", (request, response) => {
-  const { name, number } = request.body;
+app.put("/api/persons/:id/", async (request, response, next) => {
+  try {
+    const { id } = request.params;
+    const { name, number } = request.body;
 
-  if (!name || !number) {
-    response.status(400).json({ error: "name or number is required" });
+    const foundPhonebook = findPhonebookById(id);
+
+    if (!foundPhonebook) {
+      response
+        .status(404)
+        .json({ message: "Not founded person with id: " + id })
+        .end();
+      return;
+    }
+
+    const updatedPhonebook = await updatePhonebook(id, { name, number });
+    response.status(200).json(updatedPhonebook).end();
+  } catch (error) {
+    next(error);
   }
-
-  const foundPerson = persons.find((p) => p.name === name);
-
-  if (foundPerson) {
-    response.status(400).json({ error: "name must be unique" });
-  }
-
-  const newPerson = {
-    id: Math.floor(Math.random() * 1000000).toString(),
-    name,
-    number,
-  };
-
-  persons = persons.concat([newPerson]);
-
-  response.status(200).json(newPerson);
 });
 
-app.delete("/api/persons/:id", (request, response) => {
-  const { id } = request.params;
+app.post("/api/persons", async (request, response, next) => {
+  try {
+    const { name, number } = request.body;
 
-  const foundPerson = persons.find((p) => p.id === id);
+    if (!name || !number) {
+      response.status(400).json({ error: "name or number is required" });
+      return;
+    }
 
-  if (!foundPerson) {
-    response
-      .status(404)
-      .json({ message: "Not founded person with id: " + id })
-      .end();
+    const foundPhonebook = await findPhonebookByName(name);
+
+    if (foundPhonebook) {
+      response.status(400).json({ error: "name must be unique" });
+      return;
+    }
+
+    const newPhoneBook = await createPhoneBook({ name, number });
+
+    response.status(200).json(newPhoneBook);
+  } catch (error) {
+    next(error);
   }
-
-  persons = persons.filter((p) => p.id !== id);
-
-  response.status(200).json(foundPerson).end();
 });
 
-app.get("/info", (request, response) => {
+app.delete("/api/persons/:id", async (request, response, next) => {
+  try {
+    const { id } = request.params;
+
+    const foundPhonebook = await findPhonebookById(id);
+
+    if (!foundPhonebook) {
+      response
+        .status(404)
+        .json({ message: "Not founded person with id: " + id })
+        .end();
+      return;
+    }
+
+    await deletePhonebookById(id);
+
+    response.status(200).json(foundPhonebook);
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.get("/info", async (request, response) => {
+  const totalPhonebooks = await countTotalPhonebook();
   response.send(`
-    <p>Phonebook has info for 2 people<br/>${new Date().toString()}
+    <p>Phonebook has info for ${totalPhonebooks} people<br/>${new Date().toString()}
     </p>
     `);
 });
@@ -118,6 +140,20 @@ app.get("/info", (request, response) => {
 app.use((request, response) => {
   response.status(404).send({ error: "unknown endpoint" });
 });
+
+const errorHandler: ErrorRequestHandler = (error, req, res, next) => {
+  if (error.name === "CastError") {
+    res.status(400).json({ error: "malformatted id" });
+    return;
+  } else if (error.name === "ValidationError") {
+    res.status(400).json({ error: error.message });
+    return;
+  }
+
+  next(error);
+};
+
+app.use(errorHandler);
 
 app.listen(port, () => {
   console.log(`Service listening on port http://localhost:${port}`);
