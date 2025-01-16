@@ -1,0 +1,14 @@
+1) Trước tiên cài đặt các package cần thiết cho việc phát triển
+
+ts-node, typescript, nodemon@^2,
+express, mongoose, dotenv, cors, morgan
+
+2) Chia cấu trúc project thành các thư mục để dễ quản lý
+
+controllers, models, utils, app.ts index.ts
+
+controllers: sử dụng Router của express để viết các logic cho ứng dụng
+models: sử dụng mongoose Schema để khai báo cái Model phục vụ cho việc giao tiếp với db
+utils: các config, midddleware và các functions tiện ích khác được khai báo ở đây.
+app.ts: Khai báo ứng dụng express và sử dụng các middleware ở đây
+index.ts: File chính của dự án dùng để khởi động ứng dụng. import app.ts vào đây
