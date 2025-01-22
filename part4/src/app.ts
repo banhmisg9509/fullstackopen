@@ -1,5 +1,6 @@
 import cors from "cors";
 import express from "express";
+import "express-async-errors";
 import connectDB from "./utils/connectDB";
 import {
   errorHandler,
@@ -7,7 +8,6 @@ import {
   unknownEndpoint,
 } from "./utils/middleware";
 import blogController from "./controllers/blog";
-
 const app = express();
 
 connectDB();

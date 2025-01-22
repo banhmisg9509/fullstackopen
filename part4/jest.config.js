@@ -9,5 +9,6 @@ module.exports = {
       },
     ],
   },
-  verbose: true
+  verbose: true,
+  globalTeardown: "./src/test/teardown.ts"
 };
