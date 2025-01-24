@@ -10,5 +10,6 @@ module.exports = {
     ],
   },
   verbose: true,
-  globalTeardown: "./src/test/teardown.ts"
+  maxConcurrency: 1,
+  globalTeardown: "./src/test/teardown.ts",
 };

@@ -1,4 +1,6 @@
+import { IUser } from "models/user";
 import Blog, { IBlog } from "../models/blog";
+import TestAgent from "supertest/lib/agent";
 
 const initialBlogs: IBlog[] = [
   {
@@ -39,16 +41,35 @@ const initialBlogs: IBlog[] = [
   },
 ];
 
+const initialUsers: IUser[] = [
+  { name: "Hung Nguyen", username: "ndhung", password: "123456" },
+  { name: "A Nguyen", username: "nva", password: "123456" },
+];
+
 const nonExistingId = async () => {
-  const blog = new Blog({ title: 'empty', author: 'empty', url: 'empty' })
-  await blog.save()
-  await blog.deleteOne()
+  const blog = new Blog({ title: "empty", author: "empty", url: "empty" });
+  await blog.save();
+  await blog.deleteOne();
 
-  return blog._id.toString()
-}
+  return blog._id.toString();
+};
 
+const authHeader = async (
+  username: string,
+  password: string,
+  api: TestAgent
+) => {
+  const credentials = {
+    username,
+    password,
+  };
+  const response = await api.post("/api/login").send(credentials);
+  return response.header;
+};
 
 export default {
   initialBlogs,
-  nonExistingId
+  initialUsers,
+  authHeader,
+  nonExistingId,
 };

@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { IUser } from "./user";
 
 export interface IBlog {
   _id?: string;
@@ -8,6 +9,7 @@ export interface IBlog {
   url: string;
   likes?: number;
   __v?: number;
+  user?: IUser;
 }
 
 const blogSchema = new mongoose.Schema<IBlog>({
@@ -15,11 +17,18 @@ const blogSchema = new mongoose.Schema<IBlog>({
   author: String,
   url: { type: String, required: true },
   likes: { type: Number, default: 0 },
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+  },
 });
 
 blogSchema.set("toJSON", {
   transform: (document, returnedOBject) => {
     returnedOBject.id = returnedOBject._id.toString();
+
+    delete returnedOBject._id;
+    delete returnedOBject.__v;
   },
 });
 
