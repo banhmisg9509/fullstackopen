@@ -29,9 +29,10 @@ router.post("/", async (request: AuthenticationRequest, response) => {
     user: user.id,
   });
 
-  const savedBlog = await blog.save();
+  let savedBlog = await blog.save();
   user.blogs = user.blogs.concat(savedBlog.id);
   await user.save();
+  savedBlog = await savedBlog.populate("user", { blogs: 0 });
 
   response.status(201).json(savedBlog);
 });
