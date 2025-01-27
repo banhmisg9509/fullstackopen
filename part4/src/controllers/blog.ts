@@ -9,10 +9,8 @@ interface AuthenticationRequest extends Request {
 
 const router = Router();
 
-router.get("/", async (request: AuthenticationRequest, response) => {
-  const blogs = await Blog.find({
-    user: request.user.id,
-  }).populate("user", { blogs: 0 });
+router.get("/", async (_: Request, response) => {
+  const blogs = await Blog.find({}).populate("user", { blogs: 0 });
   response.json(blogs);
 });
 
@@ -56,7 +54,7 @@ router.delete("/:id", async (request: AuthenticationRequest, response) => {
   response.status(200).json(blog);
 });
 
-router.put("/:id", async (request: AuthenticationRequest, response) => {
+router.put("/:id", async (request: Request, response) => {
   const blog = await Blog.findById(request.params.id);
 
   if (!blog) {
@@ -66,19 +64,14 @@ router.put("/:id", async (request: AuthenticationRequest, response) => {
     return;
   }
 
-  if (blog.user.toString() !== request.user.id) {
-    response.status(403).json({ error: "You're not allowed" });
-    return;
-  }
-
   const { title, url, author, likes } = request.body;
-  const updatedBlog = await Blog.findByIdAndUpdate(
+  let updatedBlog = await Blog.findByIdAndUpdate(
     request.params.id,
     {
-      title,
-      url,
-      author,
-      likes,
+      title: title || blog.title,
+      url: url || blog.url,
+      author: author || blog.author,
+      likes: likes || blog.likes,
     },
     {
       new: true,
@@ -86,6 +79,8 @@ router.put("/:id", async (request: AuthenticationRequest, response) => {
       context: "query",
     }
   );
+
+  updatedBlog = await updatedBlog.populate("user", { blogs: 0 });
 
   response.status(200).json(updatedBlog);
 });

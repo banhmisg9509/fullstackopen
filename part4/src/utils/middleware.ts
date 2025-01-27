@@ -30,11 +30,11 @@ const errorHandler: ErrorRequestHandler = (error, request, response, next) => {
       .json({ error: `Duplicate ${Object.keys(error.keyValue)} entered` });
   } else if (error.name === "JsonWebTokenError") {
     response
-      .status(400)
+      .status(401)
       .json({ error: "JSON Web Token is invalid. Try Again!!!" });
   } else if (error.name === "TokenExpiredError") {
     response
-      .status(400)
+      .status(401)
       .json({ error: "JSON Web Token is expired. Try Again!!!" });
   }
 
