@@ -1,27 +1,28 @@
-import { useState } from "react";
-import authService from "../services/auth";
-import localStore, { USER } from "../services/store";
+import PropTypes from 'prop-types'
+import { useState } from 'react'
+import authService from '../services/auth'
+import localStore, { USER } from '../services/store'
 
 const LoginForm = ({ setUser, showNotification }) => {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
 
   const handleLogin = async (e) => {
-    e.preventDefault();
+    e.preventDefault()
     try {
-      const data = await authService.login(username, password);
+      const data = await authService.login(username, password)
       const loggedUser = {
         username: data.username,
         name: data.name,
-      };
-      localStore.set(USER, JSON.stringify(loggedUser));
-      setUser(loggedUser);
+      }
+      localStore.set(USER, JSON.stringify(loggedUser))
+      setUser(loggedUser)
     } catch (error) {
       if (error.response.status === 401) {
-        showNotification(error.response.data.error, "error");
+        showNotification(error.response.data.error, 'error')
       }
     }
-  };
+  }
 
   return (
     <form onSubmit={handleLogin} className="flex flex-col gap-2 max-w-64">
@@ -56,7 +57,12 @@ const LoginForm = ({ setUser, showNotification }) => {
         </button>
       </div>
     </form>
-  );
-};
+  )
+}
 
-export default LoginForm;
+LoginForm.propTypes = {
+  setUser: PropTypes.func.isRequired,
+  showNotifications: PropTypes.func.isRequired,
+}
+
+export default LoginForm
