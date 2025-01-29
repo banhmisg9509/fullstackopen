@@ -4,7 +4,7 @@ import CreateBlogForm from './components/CreateBlogForm'
 import LoginForm from './components/LoginForm'
 import Notification from './components/Notification'
 import UserStatus from './components/UserStatus'
-import blogService from './services/blogs'
+import blogService from './services/blog'
 import { sortBlogs, ownBlog } from './services/common'
 import localStore, { USER } from './services/store'
 
@@ -48,15 +48,19 @@ const App = () => {
   }
 
   const handleOnRemove = async (blog) => {
-    const answer = window.confirm(
-      `Remove blog ${blog.title} by ${blog.author}`
-    )
+    const answer = window.confirm(`Remove blog ${blog.title} by ${blog.author}`)
     if (answer) {
       await blogService.removeBlog(blog)
       setBlogs((oldBlogs) =>
         sortBlogs(oldBlogs.filter((b) => b.id !== blog.id))
       )
     }
+  }
+
+  const handleOnCreateBlog = async (payload) => {
+    const newBlog = await blogService.createBlog(payload)
+    setBlogs((oldBlogs) => sortBlogs(oldBlogs.concat(newBlog)))
+    showNotification(`a new blog ${newBlog.title} by ${newBlog.author} added`)
   }
 
   const fetchBlogs = async () => {
@@ -95,7 +99,7 @@ const App = () => {
       <h2 className="text-2xl font-semibold">blogs</h2>
       <Notification message={message} />
       <UserStatus user={user} setUser={setUser} />
-      <CreateBlogForm setBlogs={setBlogs} showNotification={showNotification} />
+      <CreateBlogForm onCreateBlog={handleOnCreateBlog} />
       <div className="flex flex-col gap-2">
         {blogs.map((blog) => (
           <Blog

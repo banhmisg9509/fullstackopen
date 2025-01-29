@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types'
-import { useState } from 'react'
+import { FormEventHandler, useState } from 'react'
 import authService from '../services/auth'
 import localStore, { USER } from '../services/store'
 
@@ -7,7 +7,7 @@ const LoginForm = ({ setUser, showNotification }) => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
 
-  const handleLogin = async (e) => {
+  const handleLogin: FormEventHandler = async (e) => {
     e.preventDefault()
     try {
       const data = await authService.login(username, password)

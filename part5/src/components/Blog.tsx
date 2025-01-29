@@ -7,10 +7,11 @@ const Blog = ({ blog, onLike, onRemove, showRemoveButton }) => {
   return (
     <div className="border border-black py-3 px-1">
       <div className="flex gap-1">
-        <span>
+        <span data-testid="title">
           {blog.title} by {blog.author}
         </span>
         <button
+          data-testid="view"
           onClick={() => setDisplay((value) => !value)}
           className="border border-black px-2 active:bg-gray-100"
         >
@@ -19,10 +20,11 @@ const Blog = ({ blog, onLike, onRemove, showRemoveButton }) => {
       </div>
       {display && (
         <>
-          <p>{blog.url}</p>
+          <p data-testid="url">{blog.url}</p>
           <p>
-            likes {blog.likes}{' '}
+            <span data-testid="likes">likes {blog.likes} </span>
             <button
+              data-testid="like"
               onClick={() => onLike(blog)}
               className="border border-black px-2 active:bg-gray-100"
             >

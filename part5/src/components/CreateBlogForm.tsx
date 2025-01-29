@@ -1,9 +1,7 @@
-import { useState } from 'react'
-import blogService from '../services/blogs'
-import { sortBlogs } from '../services/common'
+import { FormEventHandler, useState } from 'react'
 import PropTypes from 'prop-types'
 
-const CreateBlogForm = ({ setBlogs, showNotification }) => {
+const CreateBlogForm = ({ onCreateBlog }) => {
   const [display, setDisplay] = useState(false)
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
@@ -16,19 +14,18 @@ const CreateBlogForm = ({ setBlogs, showNotification }) => {
     setDisplay(false)
   }
 
-  const handleCreateBlog = async (e) => {
+  const submit: FormEventHandler = async (e) => {
     e.preventDefault()
     const payload = { title, author, url }
-    const newBlog = await blogService.createBlog(payload)
-    setBlogs((oldBlogs) => sortBlogs(oldBlogs.concat(newBlog)))
+    await onCreateBlog(payload)
     resetCreateBlogForm()
-    showNotification(`a new blog ${newBlog.title} by ${newBlog.author} added`)
   }
 
   if (!display) {
     return (
       <div>
         <button
+          data-testid="new-note"
           onClick={() => setDisplay(true)}
           className="border border-black px-2 active:bg-gray-100"
         >
@@ -39,11 +36,12 @@ const CreateBlogForm = ({ setBlogs, showNotification }) => {
   }
 
   return (
-    <form onSubmit={handleCreateBlog} className="flex flex-col gap-1 max-w-64">
+    <form onSubmit={submit} className="flex flex-col gap-1 max-w-64">
       <div>
         <label className="flex">
           <span>title:</span>
           <input
+            data-testid="title"
             type="text"
             className="border border-black ml-auto px-1"
             value={title}
@@ -56,6 +54,7 @@ const CreateBlogForm = ({ setBlogs, showNotification }) => {
         <label className="flex">
           <span>author:</span>
           <input
+            data-testid="author"
             type="text"
             className="border border-black ml-auto px-1"
             value={author}
@@ -68,6 +67,7 @@ const CreateBlogForm = ({ setBlogs, showNotification }) => {
         <label className="flex">
           <span>url: </span>
           <input
+            data-testid="url"
             type="text"
             className="border border-black ml-auto px-1"
             value={url}
@@ -78,6 +78,7 @@ const CreateBlogForm = ({ setBlogs, showNotification }) => {
 
       <div className="flex gap-1 mt-3">
         <button
+          data-testid="create"
           type="submit"
           className="border border-black px-2 active:bg-gray-100"
         >
@@ -96,8 +97,7 @@ const CreateBlogForm = ({ setBlogs, showNotification }) => {
 }
 
 CreateBlogForm.propTypes = {
-  setBlogs: PropTypes.func.isRequired,
-  showNotification: PropTypes.func.isRequired,
+  onCreateBlog: PropTypes.func.isRequired,
 }
 
 export default CreateBlogForm
