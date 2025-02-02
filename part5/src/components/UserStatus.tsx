@@ -13,6 +13,7 @@ const UserStatus = ({ user, setUser }) => {
     <div className="flex items-center gap-1">
       <p>{user.name} logged in</p>
       <button
+        data-testid="logout"
         className="border border-black px-2 active:bg-gray-100"
         onClick={handleLogout}
       >

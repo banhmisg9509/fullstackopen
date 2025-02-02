@@ -17,9 +17,9 @@ test('creating new blog', async () => {
   await UserEvent.click(await screen.findByTestId('new-note'))
 
   // input fields
-  await UserEvent.type(await screen.findByTestId('title'), blogInfo.title)
-  await UserEvent.type(await screen.findByTestId('author'), blogInfo.author)
-  await UserEvent.type(await screen.findByTestId('url'), blogInfo.url)
+  await UserEvent.type(await screen.findByTestId('title-field'), blogInfo.title)
+  await UserEvent.type(await screen.findByTestId('author-field'), blogInfo.author)
+  await UserEvent.type(await screen.findByTestId('url-field'), blogInfo.url)
 
   // click create button
   await UserEvent.click(await screen.findByTestId('create'))
@@ -29,7 +29,7 @@ test('creating new blog', async () => {
   // click new note button to show form
   await UserEvent.click(await screen.findByTestId('new-note'))
 
-  expect(await screen.findByTestId('title')).toHaveValue('')
-  expect(await screen.findByTestId('author')).toHaveValue('')
-  expect(await screen.findByTestId('url')).toHaveValue('')
+  expect(await screen.findByTestId('title-field')).toHaveValue('')
+  expect(await screen.findByTestId('author-field')).toHaveValue('')
+  expect(await screen.findByTestId('url-field')).toHaveValue('')
 })

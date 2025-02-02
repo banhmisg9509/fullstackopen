@@ -100,7 +100,7 @@ const App = () => {
       <Notification message={message} />
       <UserStatus user={user} setUser={setUser} />
       <CreateBlogForm onCreateBlog={handleOnCreateBlog} />
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-2" data-testid="blog-list">
         {blogs.map((blog) => (
           <Blog
             key={blog.id}

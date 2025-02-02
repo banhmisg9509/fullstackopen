@@ -5,7 +5,10 @@ const Blog = ({ blog, onLike, onRemove, showRemoveButton }) => {
   const [display, setDisplay] = useState(false)
 
   return (
-    <div className="border border-black py-3 px-1">
+    <div
+      className="border border-black py-3 px-1"
+      data-testid={`blog ${blog.title}`}
+    >
       <div className="flex gap-1">
         <span data-testid="title">
           {blog.title} by {blog.author}
@@ -35,6 +38,7 @@ const Blog = ({ blog, onLike, onRemove, showRemoveButton }) => {
           {showRemoveButton && (
             <div className="mt-1">
               <button
+                data-testid="remove"
                 onClick={() => onRemove(blog)}
                 className="bg-red-500 active:bg-red-700 text-white px-2"
               >

@@ -30,6 +30,7 @@ const LoginForm = ({ setUser, showNotification }) => {
         <label className="flex">
           <span>username</span>
           <input
+            data-testid="username"
             className="border border-black ml-auto"
             type="text"
             value={username}
@@ -41,6 +42,7 @@ const LoginForm = ({ setUser, showNotification }) => {
         <label className="flex">
           <span>password</span>
           <input
+            data-testid="password"
             className="border border-black ml-auto"
             type="password"
             value={password}
@@ -62,7 +64,7 @@ const LoginForm = ({ setUser, showNotification }) => {
 
 LoginForm.propTypes = {
   setUser: PropTypes.func.isRequired,
-  showNotifications: PropTypes.func.isRequired,
+  showNotification: PropTypes.func.isRequired,
 }
 
 export default LoginForm

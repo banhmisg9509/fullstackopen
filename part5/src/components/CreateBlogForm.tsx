@@ -41,7 +41,7 @@ const CreateBlogForm = ({ onCreateBlog }) => {
         <label className="flex">
           <span>title:</span>
           <input
-            data-testid="title"
+            data-testid="title-field"
             type="text"
             className="border border-black ml-auto px-1"
             value={title}
@@ -54,7 +54,7 @@ const CreateBlogForm = ({ onCreateBlog }) => {
         <label className="flex">
           <span>author:</span>
           <input
-            data-testid="author"
+            data-testid="author-field"
             type="text"
             className="border border-black ml-auto px-1"
             value={author}
@@ -67,7 +67,7 @@ const CreateBlogForm = ({ onCreateBlog }) => {
         <label className="flex">
           <span>url: </span>
           <input
-            data-testid="url"
+            data-testid="url-field"
             type="text"
             className="border border-black ml-auto px-1"
             value={url}
