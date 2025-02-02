@@ -4,6 +4,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "cross-env NODE_ENV=development nodemon",
+    "dev:test": "cross-env NODE_ENV=test nodemon",
     "test": "cross-env NODE_ENV=test jest"
   },
   "keywords": [],

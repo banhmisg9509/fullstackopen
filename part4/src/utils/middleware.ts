@@ -1,5 +1,5 @@
 import { ErrorRequestHandler, RequestHandler } from "express";
-import jwt, { JwtPayload } from "jsonwebtoken";
+import jwt, { JsonWebTokenError, JwtPayload } from "jsonwebtoken";
 import logger from "./logger";
 import User from "../models/user";
 
@@ -50,7 +50,12 @@ const isAuthenticated: RequestHandler = async (request, response, next) => {
   }
 
   const decoded = jwt.verify(token, String(process.env.JWT_SECRET));
-  (request as any).user = await User.findById((decoded as JwtPayload).id);
+  const user = await User.findById((decoded as JwtPayload).id);
+  if (!user) {
+    next(new JsonWebTokenError("User not found"));
+  }
+
+  (request as any).user = user;
 
   next();
 };
