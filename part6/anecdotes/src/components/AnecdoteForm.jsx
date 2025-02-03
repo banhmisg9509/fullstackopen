@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { createAnecdote } from "../store/anecdote/action";
+import { createAnecdote } from "src/store/slices/anecdote/action";
 
 const AnecdoteForm = () => {
   const [content, setContent] = useState("");

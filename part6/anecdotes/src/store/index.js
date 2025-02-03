@@ -1,10 +1,15 @@
-import { combineReducers, legacy_createStore as createStore } from "redux";
-import anecdotes from "./anecdote/reducer";
+import anecdotes from "src/store/slices/anecdote";
+import filter from "src/store/slices/filter";
+import notification from "src/store/slices/notification";
 
-const store = createStore(
-  combineReducers({
+import { configureStore } from "@reduxjs/toolkit";
+
+const store = configureStore({
+  reducer: {
     anecdotes,
-  })
-);
+    filter,
+    notification,
+  },
+});
 
 export default store;

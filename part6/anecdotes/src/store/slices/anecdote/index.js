@@ -1,4 +1,5 @@
-import { sortArrayByField, updateObjectInArray } from "../../utils";
+import { createSlice } from "@reduxjs/toolkit";
+import { sortArrayByField, updateObjectInArray } from "../../../utils";
 
 const anecdotesAtStart = [
   "If it hurts, do it more often",
@@ -19,22 +20,24 @@ const asObject = (anecdote) => {
   };
 };
 
-const initialState = anecdotesAtStart.map(asObject);
-
-const reducer = (state = initialState, action) => {
-  switch (action.type) {
-    case "NEW":
-      return state.concat(asObject(action.payload.content));
-    case "VOTE":
+const slice = createSlice({
+  name: "anecdotes",
+  initialState: anecdotesAtStart.map((anecdote) => asObject(anecdote)),
+  reducers: {
+    vote: (state, action) => {
       return sortArrayByField(
-        updateObjectInArray(state, "id", action.payload.id, (item) => ({
+        updateObjectInArray(state, "id", action.payload, (item) => ({
           votes: item.votes + 1,
         })),
         "votes"
       );
-    default:
-      return state;
-  }
-};
+    },
+    create: (state, action) => {
+      state.push(asObject(action.payload));
+    },
+  },
+});
 
-export default reducer;
+export const { create, vote } = slice.actions;
+
+export default slice.reducer;
