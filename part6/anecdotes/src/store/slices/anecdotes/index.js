@@ -41,3 +41,5 @@ const slice = createSlice({
 export const { create, vote } = slice.actions;
 
 export default slice.reducer;
+
+// This was replaced by RTK Query

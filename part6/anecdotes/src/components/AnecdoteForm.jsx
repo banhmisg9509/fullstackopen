@@ -1,14 +1,23 @@
 import { useState } from "react";
-import { createAnecdote } from "src/store/slices/anecdote/action";
+import { useCreateMutation } from "src/api/anecdotes";
+import { getId } from "src/utils";
 
 const AnecdoteForm = () => {
+  const [createAnecdote] = useCreateMutation();
   const [content, setContent] = useState("");
 
   const resetForm = () => setContent("");
 
-  const create = (e) => {
+  const buildAnecdote = (content) => ({
+    id: getId(),
+    content,
+    votes: 0,
+  });
+
+  const create = async (e) => {
     e.preventDefault();
-    createAnecdote(content);
+    const anecdote = buildAnecdote(content);
+    await createAnecdote(anecdote).unwrap();
     resetForm();
   };
 

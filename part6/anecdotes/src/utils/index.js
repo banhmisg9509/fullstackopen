@@ -11,3 +11,13 @@ export const sortArrayByField = (array, field, order = "desc") => {
     return 0;
   });
 };
+
+export const waitAndDo = (sec, callbackFn) => {
+  let id;
+  return function () {
+    clearTimeout(id);
+    id = setTimeout(() => callbackFn(), sec * 1000);
+  };
+};
+
+export const getId = () => (100000 * Math.random()).toFixed(0);

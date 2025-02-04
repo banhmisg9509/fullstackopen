@@ -1,29 +1,22 @@
 import { useSelector } from "react-redux";
-import { voteAnecdote } from "src/store/slices/anecdote/action";
-import { pushNotification } from "src/store/slices/notification/action";
-
-const waitAndDo = (sec, callbackFn) => {
-  let id;
-  return function () {
-    clearTimeout(id);
-    id = setTimeout(() => callbackFn(), sec * 1000);
-  };
-};
-
-const clearNotification = waitAndDo(5, () => pushNotification(""));
+import { useAnecdotesQuery, useVoteMutation } from "src/api/anecdotes";
+import {
+  pushNotification,
+  clearNotification,
+} from "src/store/slices/notification/action";
 
 const AnecdoteList = () => {
-  const anecdotes = useSelector((state) => {
-    if (!state.filter) return state.anecdotes;
-    const regex = new RegExp(state.filter, "ig");
-    return state.anecdotes.filter((anecdote) => regex.test(anecdote.content));
-  });
+  const filter = useSelector((state) => state.filter);
+  const { data: anecdotes, isFetching } = useAnecdotesQuery(filter);
+  const [voteAnecdote] = useVoteMutation();
 
   const vote = async (anecdote) => {
-    voteAnecdote(anecdote.id);
-    pushNotification(`you voted "${anecdote.content}" `);
+    await voteAnecdote(anecdote).unwrap();
+    pushNotification(`you voted "${anecdote.content}"`);
     clearNotification();
   };
+
+  if (isFetching) return <div>Loading...</div>;
 
   return (
     <>
