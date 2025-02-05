@@ -34,6 +34,7 @@ export const anecdotesAPI = {
         votes: anecdote.votes + 1,
       })
     ).data,
+  delete: async (anecdote) => await axiosClient.delete(`/${anecdote.id}`),
 };
 
 export const useAnecdotes = (filter = "") => {
@@ -55,7 +56,7 @@ export const useCreateAnecdote = () => {
     onSuccess: () => queryClient.invalidateQueries(["anecdotes"]),
     onError: (error) => {
       const errorMessage = error.response.data.error;
-      pushNotification(errorMessage);
+      pushNotification(errorMessage, "error");
     },
   });
 };
@@ -66,5 +67,18 @@ export const useVoteAnecdote = () => {
   return useMutation({
     mutationFn: anecdotesAPI.vote,
     onSuccess: () => queryClient.invalidateQueries(["anecdotes"]),
+  });
+};
+
+export const useDeleteAnecdote = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: anecdotesAPI.delete,
+    onSuccess: () => queryClient.invalidateQueries(["anecdotes"]),
+    onError: (error) => {
+      const errorMessage = error.response.data.error;
+      pushNotification(errorMessage, "error");
+    },
   });
 };

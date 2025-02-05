@@ -1,13 +1,23 @@
 import { atom, useAtomValue } from "jotai";
-import { waitAndDo } from "src/utils";
 import { store } from ".";
 
-const notification = atom("");
+const initialNotification = {
+  type: "",
+  content: "",
+};
+
+const notification = atom(initialNotification);
 export const useNotification = () => useAtomValue(notification);
-export const pushNotification = (value) => {
-  store.set(notification, value);
+export const pushNotification = (value, type = "success") => {
+  store.set(notification, { content: value, type });
   clearNotification();
 };
-export const clearNotification = waitAndDo(5, () =>
-  store.set(notification, "")
-);
+
+let timeoutId;
+export const clearNotification = (second = 5) => {
+  clearTimeout(timeoutId);
+
+  timeoutId = setTimeout(() => {
+    store.set(notification, initialNotification);
+  }, second * 1000);
+};

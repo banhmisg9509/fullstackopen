@@ -12,8 +12,8 @@ const App = () => {
   }
 
   return (
-    <div>
-      <h3>Anecdote app</h3>
+    <div className="flex flex-col container mx-auto mt-4 px-4">
+      <h3 className="text-xl mb-2">Anecdote app</h3>
       <Filter />
       <Notification />
       <AnecdoteList />
