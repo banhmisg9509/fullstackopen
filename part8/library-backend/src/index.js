@@ -1,5 +1,6 @@
 const { ApolloServer } = require("@apollo/server");
 const { startStandaloneServer } = require("@apollo/server/standalone");
+const { v4 } = require("uuid");
 
 let authors = [
   {
@@ -146,6 +147,7 @@ const resolvers = {
         author,
         published,
         genres,
+        id: v4(),
       };
 
       if (authors.every((author) => author.name !== author)) {
@@ -162,7 +164,7 @@ const resolvers = {
     editAuthor: (root, args) => {
       let author = authors.find((author) => author.name === args.name);
       if (!author) return null;
-      author.born = args.setBornTo;
+      author.born = args.setBornTo || undefined;
       return author;
     },
   },
