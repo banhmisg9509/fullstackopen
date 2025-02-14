@@ -44,6 +44,7 @@ const typeDefs = `
     authorCount: Int!
     allBooks(author: String, genre: String): [Book]
     allAuthors: [Author]
+    allGenres: [String]
   }
 
   type Mutation {
@@ -75,7 +76,8 @@ const resolvers = {
       return await Book.find(query);
     },
     allAuthors: async () => await Author.find({}),
-    me: async (root, args, context) => {
+    allGenres: async () => await Book.distinct("genres"),
+    me: async (_, __, context) => {
       return context.user;
     },
   },
@@ -189,14 +191,28 @@ const errorMiddleware = async (resolve, parent, args, context, info) => {
 const context = async ({ req }) => {
   const token = req.headers.authorization || null;
   if (!token || !token.startsWith("Bearer ")) return {};
-
-  const decoded = jwt.verify(token.slice(7), String(process.env.JWT_SECRET));
-  const user = await User.findById((decoded as JwtPayload).id);
-  if (!user) {
-    throw new GraphQLError("User not found");
+  try {
+    const decoded = jwt.verify(token.slice(7), String(process.env.JWT_SECRET));
+    const user = await User.findById((decoded as JwtPayload).id);
+    if (!user) {
+      throw new GraphQLError("User not found");
+    }
+    return { user };
+  } catch (error) {
+    if (error.name === "JsonWebTokenError") {
+      throw new GraphQLError("JSON Web Token is invalid.", {
+        extensions: {
+          code: "UNAUTHORIZED_ERROR",
+        },
+      });
+    } else if (error.name === "TokenExpiredError") {
+      throw new GraphQLError("JSON Web Token is expired.", {
+        extensions: {
+          code: "UNAUTHORIZED_ERROR",
+        },
+      });
+    }
   }
-
-  return { user };
 };
 
 const server = new ApolloServer({
@@ -208,7 +224,9 @@ const server = new ApolloServer({
   formatError: (err) => {
     return {
       message: err.message || "An error occurred",
-      code: err.extensions?.code || "INTERNAL_SERVER_ERROR",
+      extensions: {
+        code: err.extensions?.code || "INTERNAL_SERVER_ERROR",
+      },
     };
   },
 });

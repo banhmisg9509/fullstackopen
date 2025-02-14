@@ -1,20 +1,17 @@
 import { useState } from "react";
-import { Input } from "./Input";
-import { Button } from "./Button";
+import { Input } from "../components/Input";
+import { Button } from "../components/Button";
 import { ADD_BOOK } from "src/apollo/mutations";
 import { useMutation } from "@apollo/client";
-import { AUTHORS, BOOKS } from "src/apollo/queries";
 
-const NewBook = () => {
+export const NewBook = () => {
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
   const [published, setPublished] = useState("");
   const [genre, setGenre] = useState("");
   const [genres, setGenres] = useState([]);
 
-  const [addBook] = useMutation(ADD_BOOK, {
-    refetchQueries: [{ query: BOOKS }, { query: AUTHORS }],
-  });
+  const [addBook] = useMutation(ADD_BOOK);
 
   const submit = async (event) => {
     event.preventDefault();
