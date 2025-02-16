@@ -8,6 +8,7 @@ export const Recommend = () => {
     variables: {
       genre: meData?.me.favoriteGenre,
     },
+    skip: !meData?.me,
   });
   return (
     <>
@@ -15,7 +16,7 @@ export const Recommend = () => {
       <p className="my-2">
         books in your favorite genre <strong>{meData?.me.favoriteGenre}</strong>
       </p>
-      <BooksTable books={booksData.allBooks} />
+      <BooksTable books={booksData?.allBooks} />
     </>
   );
 };
