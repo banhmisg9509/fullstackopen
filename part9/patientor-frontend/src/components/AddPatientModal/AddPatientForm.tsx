@@ -11,11 +11,13 @@ import {
   Stack,
 } from "@mui/material";
 
-import { PatientFormValues, Gender } from "../../types";
+import { Gender } from "../../types";
+import { useCreatePatientEntry } from "../../stores/patients";
+import axios from "axios";
 
 interface Props {
   onCancel: () => void;
-  onSubmit: (values: PatientFormValues) => void;
+  setError: (error: string) => void;
 }
 
 interface GenderOption {
@@ -28,12 +30,14 @@ const genderOptions: GenderOption[] = Object.values(Gender).map((v) => ({
   label: v.toString(),
 }));
 
-const AddPatientForm = ({ onCancel, onSubmit }: Props) => {
+const AddPatientForm = ({ onCancel, setError }: Props) => {
   const [name, setName] = useState("");
   const [occupation, setOccupation] = useState("");
   const [ssn, setSsn] = useState("");
   const [dateOfBirth, setDateOfBirth] = useState("");
   const [gender, setGender] = useState(Gender.Other);
+
+  const { mutateAsync: createPatientEntry } = useCreatePatientEntry();
 
   const onGenderChange = (event: SelectChangeEvent<string>) => {
     event.preventDefault();
@@ -46,15 +50,35 @@ const AddPatientForm = ({ onCancel, onSubmit }: Props) => {
     }
   };
 
-  const addPatient = (event: SyntheticEvent) => {
+  const addPatient = async (event: SyntheticEvent) => {
     event.preventDefault();
-    onSubmit({
-      name,
-      occupation,
-      ssn,
-      dateOfBirth,
-      gender,
-    });
+    try {
+      const newEntry = {
+        name,
+        occupation,
+        ssn,
+        dateOfBirth,
+        gender,
+        entries: [],
+      };
+      await createPatientEntry(newEntry);
+      onCancel();
+    } catch (e) {
+      if (!axios.isAxiosError(e)) {
+        setError("Unknown error");
+        return;
+      }
+
+      if (e?.response?.data && typeof e?.response?.data === "string") {
+        const message = e.response.data.replace(
+          "Something went wrong. Error: ",
+          ""
+        );
+        setError(message);
+      } else {
+        setError("Unrecognized axios error");
+      }
+    }
   };
 
   return (
